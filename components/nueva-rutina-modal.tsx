@@ -10,12 +10,13 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
-import { X, Plus } from "lucide-react"
+import { X, Plus, Link } from "lucide-react"
 
 interface Ejercicio {
   nombre: string
   series: string
   reps: string
+  links: string[]
 }
 
 interface DaySchedule {
@@ -34,7 +35,7 @@ const DAYS = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "
 
 const MUSCLE_GROUPS = ["Pecho", "Espalda", "Piernas", "Brazos", "Hombros", "Abdomen", "Cardio", "Glúteos", "Pantorrillas"]
 
-const EJERCICIO_VACIO: Ejercicio = { nombre: "", series: "", reps: "" }
+const EJERCICIO_VACIO: Ejercicio = { nombre: "", series: "", reps: "", links: [] }
 
 export function NuevaRutinaModal({ open, onOpenChange, onRutinaCreada }: NuevaRutinaModalProps) {
   const [nombre, setNombre] = useState("")
@@ -44,6 +45,7 @@ export function NuevaRutinaModal({ open, onOpenChange, onRutinaCreada }: NuevaRu
   const [selectedMuscles, setSelectedMuscles] = useState<string[]>([])
   const [ejercicioActual, setEjercicioActual] = useState<Ejercicio>(EJERCICIO_VACIO)
   const [ejerciciosTmp, setEjerciciosTmp] = useState<Ejercicio[]>([])
+  const [linkActual, setLinkActual] = useState("")
   const [errorEjercicio, setErrorEjercicio] = useState("")
   const [errorForm, setErrorForm] = useState("")
 
@@ -53,6 +55,17 @@ export function NuevaRutinaModal({ open, onOpenChange, onRutinaCreada }: NuevaRu
     )
   }
 
+  const handleAddLink = () => {
+    const url = linkActual.trim()
+    if (!url) return
+    setEjercicioActual((prev) => ({ ...prev, links: [...prev.links, url] }))
+    setLinkActual("")
+  }
+
+  const handleRemoveLink = (i: number) => {
+    setEjercicioActual((prev) => ({ ...prev, links: prev.links.filter((_, idx) => idx !== i) }))
+  }
+
   const handleAddEjercicio = () => {
     if (!ejercicioActual.nombre) return
     if (!ejercicioActual.series) { setErrorEjercicio("Ingresá la cantidad de series"); return }
@@ -60,6 +73,7 @@ export function NuevaRutinaModal({ open, onOpenChange, onRutinaCreada }: NuevaRu
     setErrorEjercicio("")
     setEjerciciosTmp([...ejerciciosTmp, ejercicioActual])
     setEjercicioActual(EJERCICIO_VACIO)
+    setLinkActual("")
   }
 
   const handleRemoveEjercicio = (i: number) => {
@@ -104,6 +118,7 @@ export function NuevaRutinaModal({ open, onOpenChange, onRutinaCreada }: NuevaRu
     setSelectedMuscles([])
     setEjerciciosTmp([])
     setEjercicioActual(EJERCICIO_VACIO)
+    setLinkActual("")
     setErrorEjercicio("")
     setErrorForm("")
   }
@@ -218,15 +233,27 @@ export function NuevaRutinaModal({ open, onOpenChange, onRutinaCreada }: NuevaRu
                     {ejerciciosTmp.length > 0 && (
                       <div className="space-y-1 mb-2">
                         {ejerciciosTmp.map((ej, i) => (
-                          <div key={i} className="flex items-center justify-between bg-gray-50 rounded-md px-3 py-1.5 text-sm">
-                            <span className="font-medium">{ej.nombre}</span>
-                            <div className="flex items-center gap-3">
-                              {ej.series && <span className="text-gray-500">{ej.series} series</span>}
-                              {ej.reps && <span className="text-gray-500">× {ej.reps} reps</span>}
-                              <button type="button" onClick={() => handleRemoveEjercicio(i)} className="text-gray-400 hover:text-red-500">
-                                <X className="h-3.5 w-3.5" />
-                              </button>
+                          <div key={i} className="bg-gray-50 rounded-md px-3 py-1.5 text-sm">
+                            <div className="flex items-center justify-between">
+                              <span className="font-medium">{ej.nombre}</span>
+                              <div className="flex items-center gap-3">
+                                {ej.series && <span className="text-gray-500">{ej.series} series</span>}
+                                {ej.reps && <span className="text-gray-500">× {ej.reps} reps</span>}
+                                <button type="button" onClick={() => handleRemoveEjercicio(i)} className="text-gray-400 hover:text-red-500">
+                                  <X className="h-3.5 w-3.5" />
+                                </button>
+                              </div>
                             </div>
+                            {ej.links && ej.links.length > 0 && (
+                              <div className="flex flex-wrap gap-1 mt-1">
+                                {ej.links.map((link, li) => (
+                                  <span key={li} className="flex items-center gap-0.5 text-xs text-red-600">
+                                    <Link className="h-3 w-3" />
+                                    <span className="max-w-[160px] truncate">{link}</span>
+                                  </span>
+                                ))}
+                              </div>
+                            )}
                           </div>
                         ))}
                       </div>
@@ -265,6 +292,34 @@ export function NuevaRutinaModal({ open, onOpenChange, onRutinaCreada }: NuevaRu
                         disabled={!ejercicioActual.nombre}
                       >
                         <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+
+                    {/* Links de YouTube */}
+                    {ejercicioActual.links.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 mt-1">
+                        {ejercicioActual.links.map((link, i) => (
+                          <span key={i} className="flex items-center gap-1 rounded-full bg-red-50 border border-red-200 px-2 py-0.5 text-xs text-red-700">
+                            <Link className="h-3 w-3" />
+                            <span className="max-w-[140px] truncate">{link}</span>
+                            <button type="button" onClick={() => handleRemoveLink(i)} className="ml-0.5 hover:text-red-900">
+                              <X className="h-3 w-3" />
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="https://youtube.com/watch?v=..."
+                        value={linkActual}
+                        onChange={(e) => setLinkActual(e.target.value)}
+                        onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleAddLink() } }}
+                        className="flex-1 text-sm"
+                      />
+                      <Button type="button" variant="outline" size="sm" onClick={handleAddLink} disabled={!linkActual.trim()}>
+                        <Link className="h-3.5 w-3.5 mr-1" />
+                        Agregar
                       </Button>
                     </div>
                   </div>

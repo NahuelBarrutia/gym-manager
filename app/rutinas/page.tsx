@@ -4,11 +4,13 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { NuevaRutinaModal } from "@/components/nueva-rutina-modal"
+import { ExternalLink } from "lucide-react"
 
 interface Ejercicio {
   nombre: string
   series: string
   reps: string
+  links?: string[]
 }
 
 interface DiaSchedule {
@@ -98,11 +100,29 @@ export default function RutinasPage() {
                               ))}
                             </div>
                             {dia.ejercicios && dia.ejercicios.length > 0 && (
-                              <div className="space-y-0.5 mt-1">
+                              <div className="space-y-1 mt-1">
                                 {dia.ejercicios.map((ej, i) => (
-                                  <p key={i} className="text-xs text-gray-500">
-                                    • {ej.nombre}{ej.series ? ` ${ej.series}×${ej.reps}` : ""}
-                                  </p>
+                                  <div key={i}>
+                                    <p className="text-xs text-gray-500">
+                                      • {ej.nombre}{ej.series ? ` ${ej.series}×${ej.reps}` : ""}
+                                    </p>
+                                    {ej.links && ej.links.length > 0 && (
+                                      <div className="flex flex-wrap gap-1 ml-3 mt-0.5">
+                                        {ej.links.map((link, li) => (
+                                          <a
+                                            key={li}
+                                            href={link}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex items-center gap-0.5 rounded px-1.5 py-0.5 text-xs bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
+                                          >
+                                            <ExternalLink className="h-3 w-3" />
+                                            Ver video {li + 1}
+                                          </a>
+                                        ))}
+                                      </div>
+                                    )}
+                                  </div>
                                 ))}
                               </div>
                             )}
