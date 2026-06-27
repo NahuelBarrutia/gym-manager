@@ -1,0 +1,326 @@
+"use client"
+
+import type React from "react"
+import { useState, useEffect } from "react"
+import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Card, CardContent } from "@/components/ui/card"
+import { Checkbox } from "@/components/ui/checkbox"
+import { X, Plus, Link } from "lucide-react"
+
+interface Ejercicio {
+  nombre: string
+  series: string
+  reps: string
+  links: string[]
+}
+
+interface DaySchedule {
+  day: string
+  muscleGroups: string[]
+  ejercicios: Ejercicio[]
+}
+
+interface Rutina {
+  id: number
+  nombre: string
+  descripcion: string
+  programacion_semanal: string
+}
+
+interface EditarRutinaModalProps {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  rutina: Rutina | null
+  onRutinaActualizada?: () => void
+}
+
+const DAYS = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
+const MUSCLE_GROUPS = ["Pecho", "Espalda", "Piernas", "Brazos", "Hombros", "Abdomen", "Cardio", "Glúteos", "Pantorrillas"]
+const EJERCICIO_VACIO: Ejercicio = { nombre: "", series: "", reps: "", links: [] }
+
+export function EditarRutinaModal({ open, onOpenChange, rutina, onRutinaActualizada }: EditarRutinaModalProps) {
+  const [nombre, setNombre] = useState("")
+  const [descripcion, setDescripcion] = useState("")
+  const [schedule, setSchedule] = useState<DaySchedule[]>([])
+  const [selectedDay, setSelectedDay] = useState("")
+  const [selectedMuscles, setSelectedMuscles] = useState<string[]>([])
+  const [ejercicioActual, setEjercicioActual] = useState<Ejercicio>(EJERCICIO_VACIO)
+  const [ejerciciosTmp, setEjerciciosTmp] = useState<Ejercicio[]>([])
+  const [linkActual, setLinkActual] = useState("")
+  const [errorEjercicio, setErrorEjercicio] = useState("")
+  const [errorForm, setErrorForm] = useState("")
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    if (open && rutina) {
+      setNombre(rutina.nombre)
+      setDescripcion(rutina.descripcion)
+      try {
+        setSchedule(JSON.parse(rutina.programacion_semanal || "[]"))
+      } catch {
+        setSchedule([])
+      }
+      setSelectedDay("")
+      setSelectedMuscles([])
+      setEjerciciosTmp([])
+      setEjercicioActual(EJERCICIO_VACIO)
+      setLinkActual("")
+      setErrorEjercicio("")
+      setErrorForm("")
+    }
+  }, [open, rutina])
+
+  const handleToggleMuscle = (muscle: string) => {
+    setSelectedMuscles((prev) =>
+      prev.includes(muscle) ? prev.filter((m) => m !== muscle) : [...prev, muscle]
+    )
+  }
+
+  const handleAddLink = () => {
+    const url = linkActual.trim()
+    if (!url) return
+    setEjercicioActual((prev) => ({ ...prev, links: [...prev.links, url] }))
+    setLinkActual("")
+  }
+
+  const handleRemoveLink = (i: number) => {
+    setEjercicioActual((prev) => ({ ...prev, links: prev.links.filter((_, idx) => idx !== i) }))
+  }
+
+  const handleAddEjercicio = () => {
+    if (!ejercicioActual.nombre) return
+    if (!ejercicioActual.series) { setErrorEjercicio("Ingresá la cantidad de series"); return }
+    if (!ejercicioActual.reps) { setErrorEjercicio("Ingresá la cantidad de repeticiones"); return }
+    setErrorEjercicio("")
+    setEjerciciosTmp([...ejerciciosTmp, ejercicioActual])
+    setEjercicioActual(EJERCICIO_VACIO)
+    setLinkActual("")
+  }
+
+  const handleRemoveEjercicio = (i: number) => {
+    setEjerciciosTmp(ejerciciosTmp.filter((_, idx) => idx !== i))
+  }
+
+  const handleAddDay = () => {
+    if (!selectedDay || selectedMuscles.length === 0) return
+    if (ejerciciosTmp.length === 0) { setErrorEjercicio("Agregá al menos un ejercicio para este día"); return }
+    setErrorEjercicio("")
+    const newDay: DaySchedule = { day: selectedDay, muscleGroups: selectedMuscles, ejercicios: ejerciciosTmp }
+    const idx = schedule.findIndex((s) => s.day === selectedDay)
+    if (idx >= 0) {
+      const updated = [...schedule]; updated[idx] = newDay; setSchedule(updated)
+    } else {
+      setSchedule([...schedule, newDay])
+    }
+    setSelectedDay(""); setSelectedMuscles([]); setEjerciciosTmp([]); setEjercicioActual(EJERCICIO_VACIO)
+  }
+
+  const handleRemoveDay = (day: string) => {
+    setSchedule(schedule.filter((s) => s.day !== day))
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (schedule.length === 0) { setErrorForm("Agregá al menos un día a la rutina"); return }
+    setErrorForm("")
+    setLoading(true)
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/rutinas/${rutina!.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nombre, descripcion, programacion_semanal: JSON.stringify(schedule) }),
+      })
+      if (response.ok) {
+        onOpenChange(false)
+        onRutinaActualizada?.()
+      }
+    } catch (error) {
+      console.error("Error:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Editar Rutina</DialogTitle>
+          <DialogDescription>Modificá los datos y la programación semanal</DialogDescription>
+        </DialogHeader>
+
+        <form onSubmit={handleSubmit}>
+          <div className="space-y-6 py-4">
+
+            <div className="space-y-2">
+              <Label htmlFor="nombre">Nombre de la rutina</Label>
+              <Input id="nombre" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="descripcion">Descripción</Label>
+              <Textarea id="descripcion" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} rows={2} required />
+            </div>
+
+            <div className="space-y-4">
+              <Label>Programación Semanal</Label>
+
+              <Card className="border-2 border-dashed">
+                <CardContent className="p-4 space-y-4">
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label>Día de la semana</Label>
+                      <Select value={selectedDay} onValueChange={setSelectedDay}>
+                        <SelectTrigger><SelectValue placeholder="Selecciona un día" /></SelectTrigger>
+                        <SelectContent>
+                          {DAYS.map((day) => (<SelectItem key={day} value={day}>{day}</SelectItem>))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Grupos musculares</Label>
+                      <div className="grid grid-cols-2 gap-1.5 p-3 border rounded-md max-h-36 overflow-y-auto">
+                        {MUSCLE_GROUPS.map((muscle) => (
+                          <div key={muscle} className="flex items-center space-x-2">
+                            <Checkbox id={`edit-${muscle}`} checked={selectedMuscles.includes(muscle)} onCheckedChange={() => handleToggleMuscle(muscle)} />
+                            <label htmlFor={`edit-${muscle}`} className="text-sm cursor-pointer">{muscle}</label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Ejercicios del día</Label>
+                    {ejerciciosTmp.length > 0 && (
+                      <div className="space-y-1 mb-2">
+                        {ejerciciosTmp.map((ej, i) => (
+                          <div key={i} className="bg-gray-50 rounded-md px-3 py-1.5 text-sm">
+                            <div className="flex items-center justify-between">
+                              <span className="font-medium">{ej.nombre}</span>
+                              <div className="flex items-center gap-3">
+                                {ej.series && <span className="text-gray-500">{ej.series} series</span>}
+                                {ej.reps && <span className="text-gray-500">× {ej.reps} reps</span>}
+                                <button type="button" onClick={() => handleRemoveEjercicio(i)} className="text-gray-400 hover:text-red-500">
+                                  <X className="h-3.5 w-3.5" />
+                                </button>
+                              </div>
+                            </div>
+                            {ej.links && ej.links.length > 0 && (
+                              <div className="flex flex-wrap gap-1 mt-1">
+                                {ej.links.map((link, li) => (
+                                  <span key={li} className="flex items-center gap-0.5 text-xs text-red-600">
+                                    <Link className="h-3 w-3" /><span className="max-w-[160px] truncate">{link}</span>
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {errorEjercicio && <p className="text-xs text-red-600 font-medium">{errorEjercicio}</p>}
+
+                    <div className="flex gap-2">
+                      <Input placeholder="Nombre del ejercicio" value={ejercicioActual.nombre}
+                        onChange={(e) => setEjercicioActual({ ...ejercicioActual, nombre: e.target.value })} className="flex-1" />
+                      <Input placeholder="Series" value={ejercicioActual.series}
+                        onChange={(e) => setEjercicioActual({ ...ejercicioActual, series: e.target.value })} className="w-20" />
+                      <Input placeholder="Reps" value={ejercicioActual.reps}
+                        onChange={(e) => setEjercicioActual({ ...ejercicioActual, reps: e.target.value })} className="w-20" />
+                      <Button type="button" variant="outline" size="icon" onClick={handleAddEjercicio} disabled={!ejercicioActual.nombre}>
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+
+                    {ejercicioActual.links.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 mt-1">
+                        {ejercicioActual.links.map((link, i) => (
+                          <span key={i} className="flex items-center gap-1 rounded-full bg-red-50 border border-red-200 px-2 py-0.5 text-xs text-red-700">
+                            <Link className="h-3 w-3" />
+                            <span className="max-w-[140px] truncate">{link}</span>
+                            <button type="button" onClick={() => handleRemoveLink(i)} className="ml-0.5 hover:text-red-900"><X className="h-3 w-3" /></button>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    <div className="flex gap-2">
+                      <Input placeholder="https://youtube.com/watch?v=..." value={linkActual}
+                        onChange={(e) => setLinkActual(e.target.value)}
+                        onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleAddLink() } }}
+                        className="flex-1 text-sm" />
+                      <Button type="button" variant="outline" size="sm" onClick={handleAddLink} disabled={!linkActual.trim()}>
+                        <Link className="h-3.5 w-3.5 mr-1" />Agregar
+                      </Button>
+                    </div>
+                  </div>
+
+                  <Button type="button" onClick={handleAddDay} disabled={!selectedDay || selectedMuscles.length === 0} className="w-full" variant="outline">
+                    {schedule.find((s) => s.day === selectedDay) ? "Actualizar día" : "Agregar día"}
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {schedule.length > 0 && (
+                <div className="space-y-2">
+                  <Label>Días programados ({schedule.length})</Label>
+                  <div className="space-y-2">
+                    {[...schedule].sort((a, b) => DAYS.indexOf(a.day) - DAYS.indexOf(b.day)).map((item) => (
+                      <Card key={item.day}>
+                        <CardContent className="p-3">
+                          <div className="flex items-start justify-between mb-2">
+                            <span className="font-semibold text-sm">{item.day}</span>
+                            <button type="button" onClick={() => handleRemoveDay(item.day)} className="text-gray-400 hover:text-red-500">
+                              <X className="h-4 w-4" />
+                            </button>
+                          </div>
+                          <div className="flex flex-wrap gap-1 mb-2">
+                            {item.muscleGroups.map((m) => (
+                              <span key={m} className="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">{m}</span>
+                            ))}
+                          </div>
+                          {item.ejercicios.length > 0 && (
+                            <div className="space-y-0.5 mt-1">
+                              {item.ejercicios.map((ej, i) => (
+                                <p key={i} className="text-xs text-gray-600">
+                                  • {ej.nombre}{ej.series ? ` — ${ej.series}×${ej.reps}` : ""}
+                                  {ej.links && ej.links.length > 0 && (
+                                    <span className="ml-1 text-red-500">({ej.links.length} video{ej.links.length > 1 ? "s" : ""})</span>
+                                  )}
+                                </p>
+                              ))}
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {errorForm && <p className="text-sm text-red-600 font-medium text-center py-1">{errorForm}</p>}
+
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
+            <Button type="submit" className="bg-blue-600 hover:bg-blue-700" disabled={loading || !nombre || !descripcion || schedule.length === 0}>
+              {loading ? (
+                <span className="flex items-center gap-2">
+                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                  Guardando...
+                </span>
+              ) : "Guardar Cambios"}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  )
+}
