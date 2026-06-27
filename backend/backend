@@ -1,0 +1,24 @@
+import { sequelize } from './src/config/database.js';
+import { Rutina } from './src/models/rutina.js';
+
+async function recreateRutinasTable() {
+  try {
+    console.log('Conectando a la base de datos...');
+    await sequelize.authenticate();
+    
+    console.log('Eliminando tabla rutinas si existe...');
+    await sequelize.query('DROP TABLE IF EXISTS rutinas CASCADE;');
+    
+    console.log('Sincronizando modelo de Rutina...');
+    await Rutina.sync({ force: true });
+    
+    console.log('Tabla rutinas recreada exitosamente!');
+    
+    process.exit(0);
+  } catch (error) {
+    console.error('Error:', error);
+    process.exit(1);
+  }
+}
+
+recreateRutinasTable();
