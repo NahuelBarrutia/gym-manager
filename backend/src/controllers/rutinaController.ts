@@ -1,5 +1,5 @@
-import type { Request, Response } from 'express';
-import { Rutina } from '../models/rutina';
+﻿import type { Request, Response } from 'express';
+import { Rutina } from '../models/rutina.js';
 
 export const getRutinas = async (_req: Request, res: Response) => {
   const rutinas = await Rutina.findAll();

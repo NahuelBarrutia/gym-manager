@@ -1,5 +1,5 @@
-import type { Request, Response } from 'express';
-import { Usuario } from '../models/usuario';
+﻿import type { Request, Response } from 'express';
+import { Usuario } from '../models/usuario.js';
 import bcrypt from 'bcrypt';
 
 export const getUsuarios = async (_req: Request, res: Response) => {

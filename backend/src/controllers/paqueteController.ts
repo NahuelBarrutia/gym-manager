@@ -1,5 +1,5 @@
-import type { Request, Response } from 'express';
-import { Paquete } from '../models/paquete';
+﻿import type { Request, Response } from 'express';
+import { Paquete } from '../models/paquete.js';
 
 export const getPaquetes = async (_req: Request, res: Response) => {
   const paquetes = await Paquete.findAll();

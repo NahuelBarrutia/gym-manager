@@ -1,7 +1,7 @@
-import type { Request, Response } from 'express';
-import { Cliente } from '../models/cliente';
-import { Paquete } from '../models/paquete';
-import { Rutina } from '../models/rutina';
+﻿import type { Request, Response } from 'express';
+import { Cliente } from '../models/cliente.js';
+import { Paquete } from '../models/paquete.js';
+import { Rutina } from '../models/rutina.js';
 
 const includes = [
   { model: Paquete, as: 'paquete' },

@@ -1,5 +1,5 @@
-import { Model, DataTypes } from 'sequelize';
-import { sequelize } from '../config/database';
+﻿import { Model, DataTypes } from 'sequelize';
+import { sequelize } from '../config/database.js';
 
 export class Paquete extends Model {
   public id!: number;

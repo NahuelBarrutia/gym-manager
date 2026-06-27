@@ -1,5 +1,5 @@
-import { Model, DataTypes } from 'sequelize';
-import { sequelize } from '../config/database';
+﻿import { Model, DataTypes } from 'sequelize';
+import { sequelize } from '../config/database.js';
 
 export class Rutina extends Model {
   public id!: number;

@@ -1,5 +1,5 @@
-import { Model, DataTypes } from 'sequelize';
-import { sequelize } from '../config/database';
+﻿import { Model, DataTypes } from 'sequelize';
+import { sequelize } from '../config/database.js';
 import { Cliente } from './cliente';
 
 export class Pago extends Model {

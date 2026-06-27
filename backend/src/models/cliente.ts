@@ -1,5 +1,5 @@
-import { Model, DataTypes } from 'sequelize';
-import { sequelize } from '../config/database';
+﻿import { Model, DataTypes } from 'sequelize';
+import { sequelize } from '../config/database.js';
 import { Paquete } from './paquete.js';
 import { Rutina } from './rutina.js';
 
