@@ -57,8 +57,8 @@ export function EditarClienteModal({ open, onOpenChange, cliente, onClienteActua
     const cargarDatos = async () => {
       try {
         const [paquetesRes, rutinasRes] = await Promise.all([
-          fetch("${process.env.NEXT_PUBLIC_API_URL}/api/paquetes"),
-          fetch("${process.env.NEXT_PUBLIC_API_URL}/api/rutinas"),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/paquetes`),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/rutinas`),
         ])
         if (paquetesRes.ok) setPaquetes(await paquetesRes.json())
         if (rutinasRes.ok) setRutinas(await rutinasRes.json())
