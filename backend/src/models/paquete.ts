@@ -7,6 +7,7 @@ export class Paquete extends Model {
   public descripcion!: string;
   public precio!: number;
   public duracion_dias!: number;
+  public tipo!: 'gimnasio' | 'aerobox' | 'personalizado';
 }
 
 Paquete.init({
@@ -30,6 +31,11 @@ Paquete.init({
   duracion_dias: {
     type: DataTypes.INTEGER,
     allowNull: false,
+  },
+  tipo: {
+    type: DataTypes.ENUM('gimnasio', 'aerobox', 'personalizado'),
+    allowNull: false,
+    defaultValue: 'gimnasio',
   },
 }, {
   sequelize,

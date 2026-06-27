@@ -24,6 +24,7 @@ interface Paquete {
   id: number
   nombre: string
   precio: number
+  tipo: string
 }
 
 interface Rutina {
@@ -52,6 +53,8 @@ export function EditarClienteModal({ open, onOpenChange, cliente, onClienteActua
   const [paquetes, setPaquetes] = useState<Paquete[]>([])
   const [rutinas, setRutinas] = useState<Rutina[]>([])
   const [loading, setLoading] = useState(false)
+
+  const paquetesFiltrados = paquetes.filter((p) => p.tipo === formData.tipo)
 
   useEffect(() => {
     const cargarDatos = async () => {
@@ -181,7 +184,7 @@ export function EditarClienteModal({ open, onOpenChange, cliente, onClienteActua
                   <button
                     key={t.value}
                     type="button"
-                    onClick={() => setFormData({ ...formData, tipo: t.value })}
+                    onClick={() => setFormData({ ...formData, tipo: t.value, id_paquete: "" })}
                     className={`rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${
                       formData.tipo === t.value
                         ? "border-blue-600 bg-blue-50 text-blue-700"
@@ -204,11 +207,14 @@ export function EditarClienteModal({ open, onOpenChange, cliente, onClienteActua
                   <SelectValue placeholder="Selecciona un paquete" />
                 </SelectTrigger>
                 <SelectContent>
-                  {paquetes.map((p) => (
+                  {paquetesFiltrados.map((p) => (
                     <SelectItem key={p.id} value={p.id.toString()}>
-                      {p.nombre} - ${p.precio}
+                      {p.nombre} - ${p.precio.toLocaleString()}
                     </SelectItem>
                   ))}
+                  {paquetesFiltrados.length === 0 && (
+                    <div className="p-3 text-center text-sm text-gray-500">Sin paquetes para esta membresía</div>
+                  )}
                 </SelectContent>
               </Select>
             </div>

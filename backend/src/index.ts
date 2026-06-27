@@ -30,7 +30,7 @@ sequelize.authenticate()
   .then(() => {
     console.log('Conectado a la base de datos');
     // Sync crea las tablas si aún no existen
-    return sequelize.sync();
+    return sequelize.sync({ alter: true });
   })
   .then(() => {
     app.listen(PORT, () => {

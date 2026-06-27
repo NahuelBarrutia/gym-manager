@@ -1,6 +1,7 @@
 ﻿"use client"
 
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { Users, CreditCard, AlertCircle, TrendingUp, RefreshCw } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -27,6 +28,7 @@ interface PagoReciente {
 }
 
 export default function DashboardPage() {
+  const router = useRouter()
   const [stats, setStats] = useState<DashboardStats>({
     totalClientes: 0,
     pagosActivos: 0,
@@ -35,6 +37,13 @@ export default function DashboardPage() {
   })
   const [pagosRecientes, setPagosRecientes] = useState<PagoReciente[]>([])
   const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    try {
+      const u = JSON.parse(localStorage.getItem("usuario") ?? "{}")
+      if (u.rol === "empleado") router.replace("/clientes")
+    } catch {}
+  }, [])
 
   const cargarDatosDashboard = async () => {
     try {
@@ -115,7 +124,7 @@ export default function DashboardPage() {
     }
   }, [])
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8">
       {/* Header */}
       <div className="mb-8 flex items-center justify-between">
         <div>

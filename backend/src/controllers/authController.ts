@@ -16,5 +16,5 @@ export const login = async (req: Request, res: Response) => {
   }
   // Generar token
   const token = jwt.sign({ id: usuario.id, email: usuario.email }, process.env.JWT_SECRET as string, { expiresIn: '7d' });
-  res.json({ token, usuario: { id: usuario.id, nombre: usuario.nombre, email: usuario.email } });
+  res.json({ token, usuario: { id: usuario.id, nombre: usuario.nombre, email: usuario.email, rol: usuario.rol } });
 };

@@ -44,6 +44,8 @@ export function NuevaRutinaModal({ open, onOpenChange, onRutinaCreada }: NuevaRu
   const [selectedMuscles, setSelectedMuscles] = useState<string[]>([])
   const [ejercicioActual, setEjercicioActual] = useState<Ejercicio>(EJERCICIO_VACIO)
   const [ejerciciosTmp, setEjerciciosTmp] = useState<Ejercicio[]>([])
+  const [errorEjercicio, setErrorEjercicio] = useState("")
+  const [errorForm, setErrorForm] = useState("")
 
   const handleToggleMuscle = (muscle: string) => {
     setSelectedMuscles((prev) =>
@@ -53,6 +55,9 @@ export function NuevaRutinaModal({ open, onOpenChange, onRutinaCreada }: NuevaRu
 
   const handleAddEjercicio = () => {
     if (!ejercicioActual.nombre) return
+    if (!ejercicioActual.series) { setErrorEjercicio("Ingresá la cantidad de series"); return }
+    if (!ejercicioActual.reps) { setErrorEjercicio("Ingresá la cantidad de repeticiones"); return }
+    setErrorEjercicio("")
     setEjerciciosTmp([...ejerciciosTmp, ejercicioActual])
     setEjercicioActual(EJERCICIO_VACIO)
   }
@@ -63,6 +68,8 @@ export function NuevaRutinaModal({ open, onOpenChange, onRutinaCreada }: NuevaRu
 
   const handleAddDay = () => {
     if (!selectedDay || selectedMuscles.length === 0) return
+    if (ejerciciosTmp.length === 0) { setErrorEjercicio("Agregá al menos un ejercicio para este día"); return }
+    setErrorEjercicio("")
 
     const newDay: DaySchedule = {
       day: selectedDay,
@@ -97,10 +104,16 @@ export function NuevaRutinaModal({ open, onOpenChange, onRutinaCreada }: NuevaRu
     setSelectedMuscles([])
     setEjerciciosTmp([])
     setEjercicioActual(EJERCICIO_VACIO)
+    setErrorEjercicio("")
+    setErrorForm("")
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (schedule.length === 0) { setErrorForm("Agregá al menos un día a la rutina"); return }
+    const diasinEjercicios = schedule.find((d) => d.ejercicios.length === 0)
+    if (diasinEjercicios) { setErrorForm(`El día "${diasinEjercicios.day}" no tiene ejercicios`); return }
+    setErrorForm("")
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/rutinas`, {
         method: "POST",
@@ -219,6 +232,11 @@ export function NuevaRutinaModal({ open, onOpenChange, onRutinaCreada }: NuevaRu
                       </div>
                     )}
 
+                    {/* Error ejercicio */}
+                    {errorEjercicio && (
+                      <p className="text-xs text-red-600 font-medium">{errorEjercicio}</p>
+                    )}
+
                     {/* Formulario para agregar ejercicio */}
                     <div className="flex gap-2">
                       <Input
@@ -301,6 +319,10 @@ export function NuevaRutinaModal({ open, onOpenChange, onRutinaCreada }: NuevaRu
               )}
             </div>
           </div>
+
+          {errorForm && (
+            <p className="text-sm text-red-600 font-medium text-center py-1">{errorForm}</p>
+          )}
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => { resetForm(); onOpenChange(false) }}>

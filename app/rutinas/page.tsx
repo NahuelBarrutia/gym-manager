@@ -48,7 +48,7 @@ export default function RutinasPage() {
   }, [])
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8">
       {/* Header */}
       <div className="mb-8 flex items-center justify-between">
         <div>

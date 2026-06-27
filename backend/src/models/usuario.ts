@@ -6,6 +6,7 @@ export class Usuario extends Model {
   public nombre!: string;
   public email!: string;
   public password!: string;
+  public rol!: 'admin' | 'empleado';
 }
 
 Usuario.init(
@@ -27,6 +28,11 @@ Usuario.init(
     password: {
       type: DataTypes.STRING,
       allowNull: false,
+    },
+    rol: {
+      type: DataTypes.ENUM('admin', 'empleado'),
+      allowNull: false,
+      defaultValue: 'admin',
     },
   },
   {

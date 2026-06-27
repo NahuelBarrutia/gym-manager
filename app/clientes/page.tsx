@@ -37,6 +37,10 @@ interface Cliente {
   }
 }
 
+function getRol(): string {
+  try { return JSON.parse(localStorage.getItem("usuario") ?? "{}").rol ?? "empleado" } catch { return "empleado" }
+}
+
 export default function ClientesPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
@@ -46,6 +50,9 @@ export default function ClientesPage() {
   const [busqueda, setBusqueda] = useState("")
   const [filtroTipo, setFiltroTipo] = useState<TipoCliente | "todos">("todos")
   const [loading, setLoading] = useState(true)
+  const [rol, setRol] = useState("empleado")
+
+  useEffect(() => { setRol(getRol()) }, [])
 
   const clientesFiltrados = clientes.filter((c) => {
     const q = busqueda.toLowerCase()
@@ -100,7 +107,7 @@ export default function ClientesPage() {
   }, [])
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8">
       {/* Header */}
       <div className="mb-8 flex items-center justify-between">
         <div>
@@ -220,13 +227,15 @@ export default function ClientesPage() {
                       >
                         <Edit2 className="h-4 w-4" />
                       </button>
-                      <button
-                        onClick={() => handleEliminar(cliente.id)}
-                        className="text-gray-400 hover:text-red-600 transition-colors"
-                        title="Eliminar cliente"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                      {rol === "admin" && (
+                        <button
+                          onClick={() => handleEliminar(cliente.id)}
+                          className="text-gray-400 hover:text-red-600 transition-colors"
+                          title="Eliminar cliente"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
