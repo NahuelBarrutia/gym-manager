@@ -1,6 +1,6 @@
 ﻿import { Model, DataTypes } from 'sequelize';
 import { sequelize } from '../config/database.js';
-import { Cliente } from './cliente';
+import { Cliente } from './cliente.js';
 
 export class Pago extends Model {
   public id!: number;
