@@ -46,6 +46,7 @@ export default function DashboardPage() {
   }, [])
 
   const cargarDatosDashboard = async () => {
+    setLoading(true)
     try {
       // Cargar clientes
       const clientesRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/clientes`)
