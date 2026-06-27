@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import type React from "react"
 import { useState } from "react"
@@ -102,7 +102,7 @@ export function NuevaRutinaModal({ open, onOpenChange, onRutinaCreada }: NuevaRu
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      const response = await fetch("http://localhost:4000/api/rutinas", {
+      const response = await fetch("${process.env.NEXT_PUBLIC_API_URL}/api/rutinas", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

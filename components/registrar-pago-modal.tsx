@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import type React from "react"
 import { useState, useEffect } from "react"
@@ -71,8 +71,8 @@ export function RegistrarPagoModal({
   const cargarDatos = async () => {
     try {
       const [clientesRes, paquetesRes] = await Promise.all([
-        fetch('http://localhost:4000/api/clientes'),
-        fetch('http://localhost:4000/api/paquetes')
+        fetch('${process.env.NEXT_PUBLIC_API_URL}/api/clientes'),
+        fetch('${process.env.NEXT_PUBLIC_API_URL}/api/paquetes')
       ])
 
       if (clientesRes.ok) {
@@ -102,7 +102,7 @@ export function RegistrarPagoModal({
         return
       }
 
-      const response = await fetch('http://localhost:4000/api/pagos', {
+      const response = await fetch('${process.env.NEXT_PUBLIC_API_URL}/api/pagos', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

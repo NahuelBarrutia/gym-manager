@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState, useEffect } from "react"
 import { Edit2, Trash2, Calendar } from "lucide-react"
@@ -24,7 +24,7 @@ export default function PaquetesPage() {
 
   const cargarPaquetes = async () => {
     try {
-      const response = await fetch('http://localhost:4000/api/paquetes')
+      const response = await fetch('${process.env.NEXT_PUBLIC_API_URL}/api/paquetes')
       if (response.ok) {
         const data = await response.json()
         setPaquetes(data)
@@ -44,7 +44,7 @@ export default function PaquetesPage() {
   const handleEliminarPaquete = async (id: number) => {
     if (confirm('¿Estás seguro de que quieres eliminar este paquete?')) {
       try {
-        const response = await fetch(`http://localhost:4000/api/paquetes/${id}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/paquetes/${id}`, {
           method: 'DELETE',
         })
 

@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState, useEffect, useRef } from "react"
 import { Search, ChevronDown } from "lucide-react"
@@ -68,7 +68,7 @@ export default function PagosPage() {
 
   const cargarPagos = async () => {
     try {
-      const response = await fetch("http://localhost:4000/api/pagos")
+      const response = await fetch("${process.env.NEXT_PUBLIC_API_URL}/api/pagos")
       if (response.ok) setPagos(await response.json())
     } catch (error) {
       console.error("Error al cargar pagos:", error)

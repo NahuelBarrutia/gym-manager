@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState, useEffect } from "react"
 import { Search, Edit2, Trash2, History } from "lucide-react"
@@ -71,7 +71,7 @@ export default function ClientesPage() {
   const handleEliminar = async (id: number) => {
     if (!confirm("¿Estás seguro de que querés eliminar este cliente?")) return
     try {
-      const response = await fetch(`http://localhost:4000/api/clientes/${id}`, { method: "DELETE" })
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/clientes/${id}`, { method: "DELETE" })
       if (response.ok) {
         cargarClientes()
         window.dispatchEvent(new CustomEvent("dashboard-refresh"))
@@ -83,7 +83,7 @@ export default function ClientesPage() {
 
   const cargarClientes = async () => {
     try {
-      const response = await fetch('http://localhost:4000/api/clientes')
+      const response = await fetch('${process.env.NEXT_PUBLIC_API_URL}/api/clientes')
       if (response.ok) {
         const data = await response.json()
         setClientes(data)

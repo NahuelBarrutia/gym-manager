@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState, useEffect } from "react"
 import { Users, CreditCard, AlertCircle, TrendingUp, RefreshCw } from "lucide-react"
@@ -39,11 +39,11 @@ export default function DashboardPage() {
   const cargarDatosDashboard = async () => {
     try {
       // Cargar clientes
-      const clientesRes = await fetch('http://localhost:4000/api/clientes')
+      const clientesRes = await fetch('${process.env.NEXT_PUBLIC_API_URL}/api/clientes')
       const clientes = clientesRes.ok ? await clientesRes.json() : []
 
       // Cargar pagos
-      const pagosRes = await fetch('http://localhost:4000/api/pagos')
+      const pagosRes = await fetch('${process.env.NEXT_PUBLIC_API_URL}/api/pagos')
       const pagos = pagosRes.ok ? await pagosRes.json() : []
 
       // Calcular estadísticas

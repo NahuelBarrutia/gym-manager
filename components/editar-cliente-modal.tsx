@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import type React from "react"
 import { useState, useEffect } from "react"
@@ -57,8 +57,8 @@ export function EditarClienteModal({ open, onOpenChange, cliente, onClienteActua
     const cargarDatos = async () => {
       try {
         const [paquetesRes, rutinasRes] = await Promise.all([
-          fetch("http://localhost:4000/api/paquetes"),
-          fetch("http://localhost:4000/api/rutinas"),
+          fetch("${process.env.NEXT_PUBLIC_API_URL}/api/paquetes"),
+          fetch("${process.env.NEXT_PUBLIC_API_URL}/api/rutinas"),
         ])
         if (paquetesRes.ok) setPaquetes(await paquetesRes.json())
         if (rutinasRes.ok) setRutinas(await rutinasRes.json())
@@ -90,7 +90,7 @@ export function EditarClienteModal({ open, onOpenChange, cliente, onClienteActua
 
     setLoading(true)
     try {
-      const response = await fetch(`http://localhost:4000/api/clientes/${cliente.id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/clientes/${cliente.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

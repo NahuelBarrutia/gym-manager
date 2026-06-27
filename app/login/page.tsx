@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import type React from "react"
 import { useState } from "react"
@@ -21,7 +21,7 @@ export default function LoginPage() {
     setLoading(true)
 
     try {
-      const res = await fetch("http://localhost:4000/api/login", {
+      const res = await fetch("${process.env.NEXT_PUBLIC_API_URL}/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState, useEffect } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -43,7 +43,7 @@ export function HistorialPagosModal({ open, onOpenChange, cliente }: HistorialPa
     const cargarPagos = async () => {
       setLoading(true)
       try {
-        const res = await fetch(`http://localhost:4000/api/pagos/cliente/${cliente.id}`)
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pagos/cliente/${cliente.id}`)
         if (res.ok) setPagos(await res.json())
       } catch (error) {
         console.error("Error al cargar historial:", error)

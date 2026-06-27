@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import type React from "react"
 import { useState, useEffect } from "react"
@@ -47,7 +47,7 @@ export function EditarPaqueteModal({ open, onOpenChange, paquete, onPaqueteActua
     setLoading(true)
     
     try {
-      const response = await fetch(`http://localhost:4000/api/paquetes/${paquete.id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/paquetes/${paquete.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
