@@ -2,6 +2,7 @@
 import { Cliente } from '../models/cliente.js';
 import { Paquete } from '../models/paquete.js';
 import { Rutina } from '../models/rutina.js';
+import { Pago } from '../models/pago.js';
 
 const includes = [
   { model: Paquete, as: 'paquete' },
@@ -36,8 +37,13 @@ export const updateCliente = async (req: Request, res: Response) => {
 };
 
 export const deleteCliente = async (req: Request, res: Response) => {
-  const cliente = await Cliente.findByPk(req.params.id);
-  if (!cliente) return res.status(404).json({ error: 'No encontrado' });
-  await cliente.destroy();
-  res.json({ message: 'Cliente eliminado' });
+  try {
+    const cliente = await Cliente.findByPk(req.params.id);
+    if (!cliente) return res.status(404).json({ error: 'No encontrado' });
+    await Pago.destroy({ where: { id_cliente: req.params.id } });
+    await cliente.destroy();
+    res.json({ message: 'Cliente eliminado' });
+  } catch (error) {
+    res.status(500).json({ error: 'Error al eliminar cliente' });
+  }
 };
