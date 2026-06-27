@@ -17,6 +17,7 @@ const NAV_ADMIN = [
 const NAV_EMPLEADO = [
   { name: "Clientes", href: "/clientes", icon: Users },
   { name: "Pagos", href: "/pagos", icon: CreditCard },
+  { name: "Rutinas", href: "/rutinas", icon: ClipboardList },
 ]
 
 function getRolFromStorage(): string {
