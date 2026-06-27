@@ -31,7 +31,7 @@ export default function RutinasPage() {
 
   const cargarRutinas = async () => {
     try {
-      const response = await fetch('${process.env.NEXT_PUBLIC_API_URL}/api/rutinas')
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/rutinas`)
       if (response.ok) {
         const data = await response.json()
         setRutinas(data)

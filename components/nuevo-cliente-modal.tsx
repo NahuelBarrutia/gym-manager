@@ -52,8 +52,8 @@ export function NuevoClienteModal({ open, onOpenChange, onClienteCreado }: Nuevo
     const cargarDatos = async () => {
       try {
         const [paquetesRes, rutinasRes] = await Promise.all([
-          fetch('${process.env.NEXT_PUBLIC_API_URL}/api/paquetes'),
-          fetch('${process.env.NEXT_PUBLIC_API_URL}/api/rutinas')
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/paquetes`),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/rutinas`)
         ])
 
         if (paquetesRes.ok) {
@@ -76,7 +76,7 @@ export function NuevoClienteModal({ open, onOpenChange, onClienteCreado }: Nuevo
     e.preventDefault()
     
     try {
-      const response = await fetch('${process.env.NEXT_PUBLIC_API_URL}/api/clientes', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/clientes`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -281,7 +281,7 @@ export function NuevoClienteModal({ open, onOpenChange, onClienteCreado }: Nuevo
           // Recargar paquetes cuando se crea uno nuevo
           const cargarPaquetes = async () => {
             try {
-              const response = await fetch('${process.env.NEXT_PUBLIC_API_URL}/api/paquetes')
+              const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/paquetes`)
               if (response.ok) {
                 const data = await response.json()
                 setPaquetes(data)

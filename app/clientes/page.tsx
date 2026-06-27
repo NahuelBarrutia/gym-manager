@@ -83,7 +83,7 @@ export default function ClientesPage() {
 
   const cargarClientes = async () => {
     try {
-      const response = await fetch('${process.env.NEXT_PUBLIC_API_URL}/api/clientes')
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/clientes`)
       if (response.ok) {
         const data = await response.json()
         setClientes(data)

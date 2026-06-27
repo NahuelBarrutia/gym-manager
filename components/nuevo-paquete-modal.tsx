@@ -25,7 +25,7 @@ export function NuevoPaqueteModal({ open, onOpenChange, onPaqueteCreado }: Nuevo
     e.preventDefault()
     
     try {
-      const response = await fetch('${process.env.NEXT_PUBLIC_API_URL}/api/paquetes', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/paquetes`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -71,8 +71,8 @@ export function RegistrarPagoModal({
   const cargarDatos = async () => {
     try {
       const [clientesRes, paquetesRes] = await Promise.all([
-        fetch('${process.env.NEXT_PUBLIC_API_URL}/api/clientes'),
-        fetch('${process.env.NEXT_PUBLIC_API_URL}/api/paquetes')
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/clientes`),
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/paquetes`)
       ])
 
       if (clientesRes.ok) {
@@ -102,7 +102,7 @@ export function RegistrarPagoModal({
         return
       }
 
-      const response = await fetch('${process.env.NEXT_PUBLIC_API_URL}/api/pagos', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pagos`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
